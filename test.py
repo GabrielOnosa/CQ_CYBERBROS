@@ -113,4 +113,5 @@ display_frame = cv2.resize(frame, dim)
 
 cv2.imshow('Rezultat Detectie + Embeddings', display_frame)
 cv2.waitKey(0)
-cv2.destroyAllWindows()
+cv2.destroyAllWindo
+ws()
