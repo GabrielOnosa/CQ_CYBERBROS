@@ -68,14 +68,12 @@ def run_face_inference_train(model, frame):
 
 def run_face_inference_test(person_model, face_model, frame):
 
-    # 1. Get Image Dimensions (Needed for boundary checks)
+
     h_img, w_img = frame.shape[:2]
 
-    # 2. Container for all found faces
     all_detections = []
 
-    # 3. Person Detection
-    # Use the passed argument 'person_model', not 'classic_model'
+
     person_result = person_model.predict(frame, conf=0.4, imgsz=1200, verbose=False)
 
     for info in person_result:
@@ -99,38 +97,35 @@ def run_face_inference_test(person_model, face_model, frame):
 
                 person_crop = frame[crop_y1:crop_y2, crop_x1:crop_x2]
 
-                # --- STEP B: UPSCALE & DETECT ---
+
                 if person_crop.size > 0:
                     scale_factor = 3
                     h_c, w_c = person_crop.shape[:2]
 
-                    # Upscale
                     person_crop_upscaled = cv2.resize(person_crop,
                                                       (w_c * scale_factor, h_c * scale_factor),
                                                       interpolation=cv2.INTER_CUBIC)
 
-                    # Predict Face
-                    # Use passed argument 'face_model'
+
                     face_results = face_model.predict(person_crop_upscaled, conf=0.4, imgsz=640, verbose=False)
 
                     for f_info in face_results:
                         for f_box in f_info.boxes:
                             fx1, fy1, fx2, fy2 = f_box.xyxy[0]
 
-                            # --- STEP C: COORDINATE MAPPING ---
-                            # Map back to original scale
+
                             fx1_real = fx1 / scale_factor
                             fy1_real = fy1 / scale_factor
                             fx2_real = fx2 / scale_factor
                             fy2_real = fy2 / scale_factor
 
-                            # Map to global image
+
                             global_fx1 = int(crop_x1 + fx1_real)
                             global_fy1 = int(crop_y1 + fy1_real)
                             global_fx2 = int(crop_x1 + fx2_real)
                             global_fy2 = int(crop_y1 + fy2_real)
 
-                            # Add to results list
+
                             all_detections.append({
                                 "face_box": [global_fx1, global_fy1, global_fx2, global_fy2]
                             })
@@ -167,20 +162,3 @@ if __name__ == '__main__':
     cvzone.cornerRect(frame2, [x1, y1, w, h], l=5, rt=2, colorR=(255, 0, 255))
     plt.imshow(frame2)
     plt.show()
-# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# print(f"Rulez pe: {device}")
-# #pipeline for extracting face
-#
-# # Load Models
-# facemodel = YOLO('yolov12l-face.pt')
-# classic_model = YOLO('yolo11n.pt')
-#
-# # Load Image
-# im_path = r'D:\Downloads\dataset_hackathon\dataset\test\Outdoor\Masked\Andres - Outdoor - M30C.png'
-# image_array = Image.open(im_path).convert('RGB')
-# frame = np.array(image_array)
-#
-# h_img, w_img, _ = frame.shape
-#
-# # 1. Detect Persons
-# # Reduced conf to 0.25 to ensure we catch people even if blurry
