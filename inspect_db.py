@@ -5,18 +5,18 @@ import os
 # Numele fișierului creat anterior
 FILE_NAME = 'face_db.pkl'
 
-print(f"🔍 Verific fișierul: {FILE_NAME} ...\n")
+print(f" Verific fisierul: {FILE_NAME} ...\n")
 
 if not os.path.exists(FILE_NAME):
-    print("❌ EROARE: Fișierul nu există! Rulează întâi create_db.py")
+    print("EROARE: Fisierul nu există! Rulează întâi create_db.py")
     exit()
 
 try:
     with open(FILE_NAME, 'rb') as f:
         database = pickle.load(f)
 
-    print(f"✅ Baza de date încărcată cu succes!")
-    print(f"📊 Total persoane înregistrate: {len(database)}")
+    print(f" Baza de date încărcată cu succes!")
+    print(f"Total persoane înregistrate: {len(database)}")
     print("-" * 50)
     print(f"{'NUME':<20} | {'DIMENSIUNE VECTOR':<15} | {'NORMA (Lungime)'}")
     print("-" * 50)
@@ -35,9 +35,9 @@ try:
     # Test sumar
     first_key = list(database.keys())[0]
     if database[first_key].shape == (512,) or database[first_key].shape == (128,):
-        print("\n✅ Structura pare CORECTĂ pentru inferență!")
+        print("\n Structura pare corecta!")
     else:
-        print("\n⚠️ ATENȚIE: Vectorii au o dimensiune ciudată. Verifică codul de generare.")
+        print("\n WARNING: Vectorii au o dimensiune ciudată. Verifică codul de generare.")
 
 except Exception as e:
-    print(f"❌ Fișierul este corupt sau nu poate fi citit: {e}")
+    print(f" Fisierul este corupt sau nu poate fi citit: {e}")

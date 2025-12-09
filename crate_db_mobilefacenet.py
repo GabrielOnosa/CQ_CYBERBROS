@@ -21,7 +21,7 @@ WEIGHTS_PATH = 'model_mobilefacenet.pth'
 EMBEDDING_SIZE = 512
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"⚙️  Rulez pe: {device}")
+print(f"Rulez pe: {device}")
 
 
 class RecursiveImageDataset(Dataset):
@@ -88,11 +88,11 @@ def get_embedding(full_image_bgr, coords, model):
     return embedding
 
 
-print("Încarc modelele")
+print("Incarc modelele")
 try:
     det_model = YOLO('yolov12m-face.pt')
 except:
-    print("❌ Nu găsesc yolov12m-face.pt!")
+    print("Nu găsesc yolov12m-face.pt!")
     sys.exit()
 
 
@@ -154,18 +154,16 @@ for i in range(len(dataset)):
         if clean_name not in temp_db:
             temp_db[clean_name] = []
         temp_db[clean_name].append(vector)
-        print(f"\r✅ Procesat: {clean_name:<15} | Folder: {person_folder}", end="")
+        print(f"\rProcesat: {clean_name:<15} | Folder: {person_folder}", end="")
 
 print(f"\n\n{'-' * 60}")
-print("⚗️  Unific vectorii si Normalizez...")
+
 
 final_db = {}
 for name, vector_list in temp_db.items():
     if len(vector_list) > 0:
-        # 1. Facem media tuturor ipostazelor persoanei
-        avg_vector = np.mean(vector_list, axis=0)
 
-        # 2. NORMALIZARE CRITICA (Vectorul final trebuie sa aiba lungimea 1)
+        avg_vector = np.mean(vector_list, axis=0)
         avg_vector = avg_vector / np.linalg.norm(avg_vector)
 
         final_db[name] = avg_vector
@@ -175,4 +173,4 @@ for name, vector_list in temp_db.items():
 with open(SAVE_FILE, 'wb') as f:
     pickle.dump(final_db, f)
 
-print(f"\n✅ Succes! Baza de date '{SAVE_FILE}' este gata de testare.")
+print(f"\n Succes! Baza de date '{SAVE_FILE}' este gata de testare.")

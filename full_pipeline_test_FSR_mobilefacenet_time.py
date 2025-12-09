@@ -23,7 +23,7 @@ try:
     HAS_CV2_CONTRIB = True
 except ImportError:
     HAS_CV2_CONTRIB = False
-    print("\n⚠️ ATENTIE: Modulul 'dnn_superres' lipseste.")
+    print("\n ATENTIE: Modulul 'dnn_superres' lipseste.")
     print("   Super Resolution va fi dezactivat automat.\n")
 
 
@@ -174,17 +174,17 @@ def extract_ground_truth_name(filename):
 
 
 if not os.path.exists(DB_FILE):
-    print(f"❌ EROARE: Baza de date '{DB_FILE}' nu exista!")
+    print(f" EROARE: Baza de date '{DB_FILE}' nu exista!")
     sys.exit()
 
 with open(DB_FILE, 'rb') as f:
     face_db = pickle.load(f)
 
-print("⏳ Loading YOLO & Rec Model...")
+print("Loading YOLO & Rec Model...")
 person_model = YOLO('yolo12s.pt')
 face_model = YOLO('yolov12m-face.pt')
 
-print(f"⏳ Incarc MobileFaceNet din {WEIGHTS_PATH}...")
+print(f" Incarc MobileFaceNet din {WEIGHTS_PATH}...")
 embed_model = MobileFaceNet(512).to(device)
 
 try:
@@ -194,9 +194,9 @@ try:
     else:
         embed_model.load_state_dict(checkpoint)
     embed_model.eval()
-    print("✅ Model MobileFaceNet Incarcat!")
+    print(" Model MobileFaceNet Incarcat!")
 except Exception as e:
-    print(f"❌ Eroare la incarcare model .pth: {e}")
+    print(f" Eroare la incarcare model .pth: {e}")
     sys.exit()
 
 
@@ -210,7 +210,7 @@ stats = {
     "outdoor_masked_correct": 0, "outdoor_masked_total": 0
 }
 
-print(f"\n🚀 START EVALUARE PE {len(dataset)} IMAGINI (FARA TTA/FLIP)...")
+print(f"\n START EVALUARE PE {len(dataset)} IMAGINI ")
 print("-" * 80)
 print(f"{'FILENAME':<35} | {'REAL':<10} | {'PREDICTED':<15} | {'SCORE'} | {'RES'} | {'SR'}")
 print("-" * 80)
@@ -264,7 +264,7 @@ for i in range(len(dataset)):
 
 
         print(
-            f"   ⏱️ [Face]: YOLO={yolo_ms:.1f}ms | Prep={timings['prep_ms']:.1f}ms | SR={timings['sr_ms']:.1f}ms | Net={timings['infer_ms']:.1f}ms")
+            f" [Face]: YOLO={yolo_ms:.1f}ms | Prep={timings['prep_ms']:.1f}ms | SR={timings['sr_ms']:.1f}ms | Net={timings['infer_ms']:.1f}ms")
 
         vector = res_emb / np.linalg.norm(res_emb)
 
@@ -296,7 +296,7 @@ for i in range(len(dataset)):
 
     status = ""
     if best_match_name == real_name:
-        status = "✅"
+        status = "Correct!"
         stats["correct"] += 1
         if is_indoor:
             if is_masked:
@@ -312,7 +312,7 @@ for i in range(len(dataset)):
         status = "❔"
         stats["unknown"] += 1
     else:
-        status = "❌"
+        status = "WRONG!"
         stats["wrong"] += 1
 
     sr_tag = "⚡" if was_upscaled else " "
@@ -339,7 +339,7 @@ def calc_acc(correct, total):
 acc_total = calc_acc(stats["correct"], stats["total"])
 
 print("\n" + "=" * 55)
-print("📊 RAPORT FINAL DETALIAT (MobileFaceNet + SR)")
+print("RAPORT FINAL DETALIAT (MobileFaceNet + SR)")
 print("=" * 55)
 print(f"Total Imagini Procesate: {stats['total']}")
 print(f" -> Fețe Nedetectate: {stats['no_face_detected']}")
@@ -347,15 +347,15 @@ print(f" -> Corecte Total:    {stats['correct']}")
 print(f" -> Greșite Total:    {stats['wrong']}")
 print(f" -> Necunoscute:      {stats['unknown']}")
 print("-" * 55)
-print(f"🎯 ACURATEȚE TOTALĂ: {acc_total:.2f}%")
+print(f" ACURATEȚE TOTALĂ: {acc_total:.2f}%")
 print("-" * 55)
-print("📂 STATISTICI PE CATEGORII (Corecte / Total):")
+print("STATISTICI PE CATEGORII (Corecte / Total):")
 print(
-    f"   🏠 Indoor  - Fără Mască: {stats['indoor_nomask_correct']}/{stats['indoor_nomask_total']}  ({calc_acc(stats['indoor_nomask_correct'], stats['indoor_nomask_total']):.2f}%)")
+    f"    Indoor  - Fără Mască: {stats['indoor_nomask_correct']}/{stats['indoor_nomask_total']}  ({calc_acc(stats['indoor_nomask_correct'], stats['indoor_nomask_total']):.2f}%)")
 print(
-    f"   🏠 Indoor  - Cu Mască:   {stats['indoor_masked_correct']}/{stats['indoor_masked_total']}  ({calc_acc(stats['indoor_masked_correct'], stats['indoor_masked_total']):.2f}%)")
+    f"    Indoor  - Cu Mască:   {stats['indoor_masked_correct']}/{stats['indoor_masked_total']}  ({calc_acc(stats['indoor_masked_correct'], stats['indoor_masked_total']):.2f}%)")
 print(
-    f"   🌳 Outdoor - Fără Mască: {stats['outdoor_nomask_correct']}/{stats['outdoor_nomask_total']} ({calc_acc(stats['outdoor_nomask_correct'], stats['outdoor_nomask_total']):.2f}%)")
+    f"    Outdoor - Fără Mască: {stats['outdoor_nomask_correct']}/{stats['outdoor_nomask_total']} ({calc_acc(stats['outdoor_nomask_correct'], stats['outdoor_nomask_total']):.2f}%)")
 print(
-    f"   🌳 Outdoor - Cu Mască:   {stats['outdoor_masked_correct']}/{stats['outdoor_masked_total']} ({calc_acc(stats['outdoor_masked_correct'], stats['outdoor_masked_total']):.2f}%)")
+    f"    Outdoor - Cu Mască:   {stats['outdoor_masked_correct']}/{stats['outdoor_masked_total']} ({calc_acc(stats['outdoor_masked_correct'], stats['outdoor_masked_total']):.2f}%)")
 print("=" * 55)

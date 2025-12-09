@@ -29,7 +29,7 @@ CONF_FACE = 0.20
 THRESHOLD_ID = 0.13
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"⚙️  System ready using: {device}")
+print(f" System ready using: {device}")
 
 
 
@@ -88,16 +88,14 @@ def run_detection_pipeline(person_model, face_model, frame, debug_title="DEBUG")
                                 "face_box": [global_fx1, global_fy1, global_fx2, global_fy2]
                             })
 
-                            # Desenam pe imagine
+
                             cvzone.cornerRect(frame, [global_fx1, global_fy1, global_fx2 - global_fx1,
                                                       global_fy2 - global_fy1], l=10, rt=1, colorR=(255, 0, 0))
 
     return all_detections
 
 
-# ==========================================
-# 2. HELPER EMBEDDING
-# ==========================================
+
 preprocess = transforms.Compose([
     transforms.ToPILImage(),
     transforms.Resize((112, 112)),
@@ -134,12 +132,8 @@ def get_embedding(full_image_bgr, coords, model):
     return embedding
 
 
-# ==========================================
-# 3. MAIN WORKFLOW
-# ==========================================
 
-# --- INCARCARE MODELE ---
-print("⏳ Încarc Modele...")
+print("loading models")
 person_model = YOLO('yolo12s.pt')
 face_model = YOLO('yolov12m-face.pt')
 embed_model = MobileFaceNet(512).to(device)
@@ -152,7 +146,7 @@ try:
         embed_model.load_state_dict(checkpoint)
     embed_model.eval()
 except Exception as e:
-    print(f"❌ Eroare MobileFaceNet: {e}")
+    print(f"Eroare MobileFaceNet: {e}")
     sys.exit()
 
 # --- INCARCARE DB EXISTENT ---
@@ -202,7 +196,7 @@ print(f"\n TESTARE: Procesez imaginea de TEST: {TEST_IMAGE_PATH}")
 test_img = cv2.imread(TEST_IMAGE_PATH)
 
 if test_img is None:
-    print("❌ Nu pot citi imaginea de test!")
+    print("Nu pot citi imaginea de test!")
     sys.exit()
 
 
